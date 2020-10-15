@@ -9,6 +9,7 @@
 #include "vtkSphereSource.h"
 #include "vtkImageData.h"
 #include "vtkDicomImageReader.h"
+#include "vtkDataSetReader.h"
 #include "ProceduralMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "MarchingCubes.generated.h"

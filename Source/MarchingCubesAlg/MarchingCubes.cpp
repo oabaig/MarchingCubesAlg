@@ -123,7 +123,7 @@ void AMarchingCubes::UnrealMarchingCubesTEST()
 	reader->SetDirectoryName("Test_Data_256x256");
 	volume->DeepCopy(reader->GetOutput());
 	reader->Update();*/
-
+	/*
 	vtkSmartPointer<vtkMarchingCubes> surface =
 		vtkSmartPointer<vtkMarchingCubes>::New();
 	surface->SetInputData(volume);
@@ -132,6 +132,13 @@ void AMarchingCubes::UnrealMarchingCubesTEST()
 	surface->Update();
 
 	polyData = surface->GetOutput();
+	*/
+
+	vtkSmartPointer<vtkDataSetReader> reader =
+		vtkSmartPointer<vtkDataSetReader>::New();
+
+	//reader->AddFileName("F:\\Unreal Projects\\MarchingCubesAlg\\bernard3D_Q.vtk");
+
 
 	GenerateMesh();
 }

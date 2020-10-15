@@ -32,10 +32,13 @@ public class MarchingCubesAlg : ModuleRules
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkFiltersSources-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkImagingCore-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkImagingHybrid-9.0d.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkIOCore-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkIOImage-9.0d.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkIOLegacy-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkloguru-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkRenderingCore-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtksys-9.0d.lib"));
+
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
