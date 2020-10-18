@@ -137,6 +137,8 @@ void AMarchingCubes::UnrealMarchingCubesTEST()
 	vtkSmartPointer<vtkDataSetReader> reader =
 		vtkSmartPointer<vtkDataSetReader>::New();
 
+	
+
 	//reader->AddFileName("F:\\Unreal Projects\\MarchingCubesAlg\\bernard3D_Q.vtk");
 
 
