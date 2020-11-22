@@ -7,9 +7,11 @@
 #include "vtkMarchingCubes.h"
 #include "vtkVoxelModeller.h"
 #include "vtkSphereSource.h"
-#include "vtkImageData.h"
-#include "vtkDicomImageReader.h"
 #include "vtkDataSetReader.h"
+#include "vtkPointData.h"
+#include "vtkPolyDataNormals.h"
+#include "vtkDataArray.h"
+#include "Misc/Paths.h"
 #include "ProceduralMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "MarchingCubes.generated.h"
@@ -31,7 +33,7 @@ protected:
 		UProceduralMeshComponent* mesh;
 
 public:
-	void UnrealMarchingCubesTEST();
+	UFUNCTION(BlueprintCallable) void MarchingCubes(FString filename);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh parameters")
 		FVector CubeRadius = FVector(100.0f, 100.0f, 100.0f);
 

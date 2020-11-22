@@ -12,6 +12,8 @@ AMarchingCubes::AMarchingCubes()
 	mesh->bUseAsyncCooking = true;
 
 	polyData = vtkSmartPointer<vtkPolyData>::New();
+	
+	//AutoPossessPlayer
 }
 
 void AMarchingCubes::GenerateMesh()
@@ -72,87 +74,54 @@ void AMarchingCubes::GenerateMesh()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
 		TEXT("Number of Triangles: ") + FString::FromInt(numTriangles));
 
+	vtkSmartPointer<vtkDataArray> vtkNormalArray = vtkSmartPointer<vtkDataArray>::New();
+	vtkNormalArray = polyData->GetPointData()->GetNormals();
+	TArray<FVector> normals;
+	for (int i = 0; i < vtkNormalArray->GetNumberOfValues(); i++) {
+		normals.Add(vtkNormalArray->GetTuple(i)[0]);
+	}
 
 
 	// draws the vertices and triangles in Unreal
 	// most of the fields are unused for the purpose of this project, so just create empty arrays
-	mesh->CreateMeshSection_LinearColor(0, vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+	mesh->CreateMeshSection_LinearColor(0, vertices, Triangles, normals, TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
 
 	// Enable collision data
 	mesh->ContainsPhysicsTriMeshData(true);
 }
 
-void AMarchingCubes::UnrealMarchingCubesTEST()
-{
-	vtkSmartPointer<vtkImageData> volume =
-		vtkSmartPointer<vtkImageData>::New();
-	double isoValue;
-
-	
-	// no argument case -- fix
-	vtkSmartPointer<vtkSphereSource> sphereSource =
-		vtkSmartPointer<vtkSphereSource>::New();
-	sphereSource->SetRadius(500);
-	sphereSource->SetPhiResolution(20);
-	sphereSource->SetThetaResolution(20);
-	sphereSource->Update();
-
-	double bounds[6];
-	sphereSource->GetOutput()->GetBounds(bounds);
-	for (unsigned int i = 0; i < 6; i += 2) {
-		double range = bounds[i + 1] - bounds[i];
-		bounds[i] = bounds[i] - 0.1 * range;
-		bounds[i + 1] = bounds[i + 1] + 0.1 * range;
-	}
-	vtkSmartPointer<vtkVoxelModeller> voxelModeller =
-		vtkSmartPointer<vtkVoxelModeller>::New();
-	voxelModeller->SetSampleDimensions(50, 50, 50);
-	voxelModeller->SetModelBounds(bounds);
-	voxelModeller->SetScalarTypeToFloat();
-	voxelModeller->SetMaximumDistance(0.1);
-
-	voxelModeller->SetInputConnection(sphereSource->GetOutputPort());
-	voxelModeller->Update();
-	isoValue = 0.5;
-	volume->DeepCopy(voxelModeller->GetOutput());
-	// end argument case 
-
-	/*isoValue = 0.5;
-	vtkSmartPointer<vtkDICOMImageReader> reader =
-		vtkSmartPointer<vtkDICOMImageReader>::New();
-	reader->SetDirectoryName("Test_Data_256x256");
-	volume->DeepCopy(reader->GetOutput());
-	reader->Update();*/
-	/*
-	vtkSmartPointer<vtkMarchingCubes> surface =
-		vtkSmartPointer<vtkMarchingCubes>::New();
-	surface->SetInputData(volume);
-	surface->ComputeNormalsOn();
-	surface->SetValue(0, isoValue);
-	surface->Update();
-
-	polyData = surface->GetOutput();
-	*/
-
+void AMarchingCubes::MarchingCubes(FString filename)
+{	
+	FString directory = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Data"), filename);
+	const char* fname = TCHAR_TO_ANSI(*directory);
+	double isoValue = 10;
 	vtkSmartPointer<vtkDataSetReader> reader =
 		vtkSmartPointer<vtkDataSetReader>::New();
 
+	reader->SetFileName(fname);
+	reader->Update();
 	
-
-	//reader->AddFileName("F:\\Unreal Projects\\MarchingCubesAlg\\bernard3D_Q.vtk");
-
+	vtkSmartPointer<vtkMarchingCubes> surface =
+		vtkSmartPointer<vtkMarchingCubes>::New();
+	surface->SetInputConnection(reader->GetOutputPort());
+	surface->ComputeNormalsOn();
+	surface->SetValue(0, isoValue);
+	surface->Update();
+	
+	polyData = surface->GetOutput();
 
 	GenerateMesh();
+
 }
 
 void AMarchingCubes::PostActorCreated()
 {
 	Super::PostActorCreated();
-	UnrealMarchingCubesTEST();
+	//UnrealMarchingCubesTEST();
 }
 
 void AMarchingCubes::PostLoad()
 {
 	Super::PostLoad();
-	UnrealMarchingCubesTEST();
+	//UnrealMarchingCubesTEST();
 }

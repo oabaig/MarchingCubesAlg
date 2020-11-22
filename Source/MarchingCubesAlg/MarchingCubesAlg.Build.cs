@@ -26,6 +26,7 @@ public class MarchingCubesAlg : ModuleRules
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkCommonMisc-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkCommonSystem-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkCommonTransforms-9.0d.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkdoubleconversion-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkFiltersCore-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkFiltersGeneral-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkFiltersGeometry-9.0d.lib"));
@@ -36,8 +37,12 @@ public class MarchingCubesAlg : ModuleRules
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkIOImage-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkIOLegacy-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkloguru-9.0d.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtklz4-9.0d.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtklzma-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkRenderingCore-9.0d.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtksys-9.0d.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "vtkzlib-9.0d.lib"));
+
 
 
         // Uncomment if you are using Slate UI
