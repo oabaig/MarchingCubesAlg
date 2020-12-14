@@ -13,7 +13,8 @@ AMarchingCubes::AMarchingCubes()
 
 	polyData = vtkSmartPointer<vtkPolyData>::New();
 	
-	//AutoPossessPlayer
+	// defualt scale
+	SetActorScale3D(FVector(100.0f, 100.0f, 100.0f));
 }
 
 void AMarchingCubes::GenerateMesh()
@@ -30,10 +31,12 @@ void AMarchingCubes::GenerateMesh()
 	// and store all the points into a vector containing all the vertices
 	double x[3];
 	TArray<FVector> vertices;
+	TArray<FLinearColor> vertexColors;
 	for (vtkIdType i = 0; i < polyData->GetNumberOfPoints(); i++)
 	{
 		polyData->GetPoint(i, x);
 		vertices.Add(FVector(x[0], x[1], x[2]));
+		vertexColors.Add(FLinearColor(FColor::White));
 
 		messageLog.Message(EMessageSeverity::Info,
 			FText::FromString(FString::Printf(TEXT("Point %d: (%f, %f, %f)"), i, x[0], x[1], x[2])));
@@ -74,27 +77,33 @@ void AMarchingCubes::GenerateMesh()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
 		TEXT("Number of Triangles: ") + FString::FromInt(numTriangles));
 
-	vtkSmartPointer<vtkDataArray> vtkNormalArray = vtkSmartPointer<vtkDataArray>::New();
+	vtkDataArray* vtkNormalArray;
 	vtkNormalArray = polyData->GetPointData()->GetNormals();
 	TArray<FVector> normals;
-	for (int i = 0; i < vtkNormalArray->GetNumberOfValues(); i++) {
-		normals.Add(vtkNormalArray->GetTuple(i)[0]);
+	TArray<FVector> tangents;
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+		TEXT("Number of Tuples: ") + FString::FromInt(vtkNormalArray->GetNumberOfTuples()));
+	double testDouble[3];
+	for (int i = 0; i < vtkNormalArray->GetNumberOfTuples(); i++) {
+		vtkNormalArray->GetTuple(i, testDouble);
+		normals.Add(FVector(testDouble[0], testDouble[1], testDouble[2]));
 	}
-
 
 	// draws the vertices and triangles in Unreal
 	// most of the fields are unused for the purpose of this project, so just create empty arrays
-	mesh->CreateMeshSection_LinearColor(0, vertices, Triangles, normals, TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+	mesh->CreateMeshSection_LinearColor(0, vertices, Triangles, normals, TArray<FVector2D>(), vertexColors, TArray<FProcMeshTangent>(), true);
 
 	// Enable collision data
 	mesh->ContainsPhysicsTriMeshData(true);
+
+	
 }
 
-void AMarchingCubes::MarchingCubes(FString filename)
+void AMarchingCubes::MarchingCubes(FString filename, FString isoValueStr)
 {	
+	double isoValue = FCString::Atod(*isoValueStr);
 	FString directory = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Data"), filename);
 	const char* fname = TCHAR_TO_ANSI(*directory);
-	double isoValue = 10;
 	vtkSmartPointer<vtkDataSetReader> reader =
 		vtkSmartPointer<vtkDataSetReader>::New();
 

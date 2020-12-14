@@ -33,7 +33,7 @@ protected:
 		UProceduralMeshComponent* mesh;
 
 public:
-	UFUNCTION(BlueprintCallable) void MarchingCubes(FString filename);
+	UFUNCTION(BlueprintCallable) void MarchingCubes(FString filename, FString isoValueStr);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh parameters")
 		FVector CubeRadius = FVector(100.0f, 100.0f, 100.0f);
 
