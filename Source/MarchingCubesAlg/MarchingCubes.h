@@ -12,6 +12,7 @@
 #include "vtkPolyDataNormals.h"
 #include "vtkDataArray.h"
 #include "Misc/Paths.h"
+#include "GenericPlatform/GenericPlatformFile.h"
 #include "ProceduralMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "MarchingCubes.generated.h"

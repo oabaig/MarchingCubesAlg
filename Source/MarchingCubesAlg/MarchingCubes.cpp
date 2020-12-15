@@ -83,6 +83,7 @@ void AMarchingCubes::GenerateMesh()
 	TArray<FVector> tangents;
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
 		TEXT("Number of Tuples: ") + FString::FromInt(vtkNormalArray->GetNumberOfTuples()));
+	
 	double testDouble[3];
 	for (int i = 0; i < vtkNormalArray->GetNumberOfTuples(); i++) {
 		vtkNormalArray->GetTuple(i, testDouble);
@@ -101,26 +102,33 @@ void AMarchingCubes::GenerateMesh()
 
 void AMarchingCubes::MarchingCubes(FString filename, FString isoValueStr)
 {	
+
 	double isoValue = FCString::Atod(*isoValueStr);
-	FString directory = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Data"), filename);
-	const char* fname = TCHAR_TO_ANSI(*directory);
+	//FString directory = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Data"), filename);
+	//const char* fname = TCHAR_TO_ANSI(*directory);
+	const char* fname = TCHAR_TO_ANSI(*filename);
 	vtkSmartPointer<vtkDataSetReader> reader =
 		vtkSmartPointer<vtkDataSetReader>::New();
 
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+		TEXT("iso1: ") + isoValueStr);
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+		TEXT("iso: ") + FString::FromInt(isoValue));
+
 	reader->SetFileName(fname);
 	reader->Update();
-	
+
 	vtkSmartPointer<vtkMarchingCubes> surface =
 		vtkSmartPointer<vtkMarchingCubes>::New();
 	surface->SetInputConnection(reader->GetOutputPort());
 	surface->ComputeNormalsOn();
 	surface->SetValue(0, isoValue);
 	surface->Update();
-	
+
 	polyData = surface->GetOutput();
 
 	GenerateMesh();
-
 }
 
 void AMarchingCubes::PostActorCreated()
