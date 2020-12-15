@@ -49,7 +49,7 @@ void AMarchingCubes::GenerateMesh()
 	cellArray = polyData->GetPolys();
 
 	// output number of triangles
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
 		TEXT("Number of Vertices: ") + FString::SanitizeFloat(cellArray->GetSize()));
 
 	// create a list that stores the points, in order, for each triangle
@@ -58,6 +58,7 @@ void AMarchingCubes::GenerateMesh()
 		vtkSmartPointer<vtkIdList>::New();
 	int h;
 	int numTriangles = 0;
+	Triangles.Empty();
 	for (int i = 0; i < polyData->GetNumberOfPolys(); i++) {
 		// GetNextCell returns 0 if end of cells, 1 if else
 		h = cellArray->GetNextCell(p);
@@ -74,14 +75,14 @@ void AMarchingCubes::GenerateMesh()
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
 		TEXT("Number of Triangles: ") + FString::FromInt(numTriangles));
 
 	vtkDataArray* vtkNormalArray;
 	vtkNormalArray = polyData->GetPointData()->GetNormals();
 	TArray<FVector> normals;
 	TArray<FVector> tangents;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
 		TEXT("Number of Tuples: ") + FString::FromInt(vtkNormalArray->GetNumberOfTuples()));
 	
 	double testDouble[3];
@@ -102,19 +103,16 @@ void AMarchingCubes::GenerateMesh()
 
 void AMarchingCubes::MarchingCubes(FString filename, FString isoValueStr)
 {	
-
+	mesh->ClearAllMeshSections();
+	polyData = vtkSmartPointer<vtkPolyData>::New();
 	double isoValue = FCString::Atod(*isoValueStr);
-	//FString directory = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Data"), filename);
-	//const char* fname = TCHAR_TO_ANSI(*directory);
+
 	const char* fname = TCHAR_TO_ANSI(*filename);
 	vtkSmartPointer<vtkDataSetReader> reader =
 		vtkSmartPointer<vtkDataSetReader>::New();
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-		TEXT("iso1: ") + isoValueStr);
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue,
-		TEXT("iso: ") + FString::FromInt(isoValue));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+		TEXT("iso value: ") + FString::FromInt(isoValue));
 
 	reader->SetFileName(fname);
 	reader->Update();
@@ -129,16 +127,4 @@ void AMarchingCubes::MarchingCubes(FString filename, FString isoValueStr)
 	polyData = surface->GetOutput();
 
 	GenerateMesh();
-}
-
-void AMarchingCubes::PostActorCreated()
-{
-	Super::PostActorCreated();
-	//UnrealMarchingCubesTEST();
-}
-
-void AMarchingCubes::PostLoad()
-{
-	Super::PostLoad();
-	//UnrealMarchingCubesTEST();
 }

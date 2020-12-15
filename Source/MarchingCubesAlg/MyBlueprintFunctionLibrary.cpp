@@ -6,7 +6,7 @@
 
 FString UMyBlueprintFunctionLibrary::OpenWindowsFiles() {
 	TArray<FString> OpenFileNames;//The absolute path of the obtained file
-	FString ExtensionStr = TEXT("*.*");//File type
+	FString ExtensionStr = TEXT("*.vtk*");//File type
 
 	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 	DesktopPlatform->OpenFileDialog(nullptr, TEXT("ywy file manager"), FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), TEXT(""), *ExtensionStr, EFileDialogFlags::None, OpenFileNames);

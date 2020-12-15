@@ -35,12 +35,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable) void MarchingCubes(FString filename, FString isoValueStr);
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh parameters")
-		FVector CubeRadius = FVector(100.0f, 100.0f, 100.0f);
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh parameters")
+	//	FVector CubeRadius = FVector(100.0f, 100.0f, 100.0f);
 
 private:
-	virtual void PostActorCreated() override;
-	virtual void PostLoad() override;
 	TArray<int32> Triangles;
 	vtkSmartPointer<vtkPolyData> polyData;
 
