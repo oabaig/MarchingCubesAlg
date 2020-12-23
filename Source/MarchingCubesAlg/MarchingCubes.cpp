@@ -24,8 +24,8 @@ void AMarchingCubes::GenerateMesh()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
 		TEXT("Number of Points: ") + FString::SanitizeFloat(polyData->GetNumberOfPoints()));
 
-	auto messageLog = FMessageLog("Points");
-	messageLog.Open(EMessageSeverity::Info, true);
+	//auto messageLog = FMessageLog("Points");
+	//messageLog.Open(EMessageSeverity::Info, true);
 
 	// output all points
 	// and store all the points into a vector containing all the vertices
@@ -38,8 +38,8 @@ void AMarchingCubes::GenerateMesh()
 		vertices.Add(FVector(x[0], x[1], x[2]));
 		vertexColors.Add(FLinearColor(FColor::White));
 
-		messageLog.Message(EMessageSeverity::Info,
-			FText::FromString(FString::Printf(TEXT("Point %d: (%f, %f, %f)"), i, x[0], x[1], x[2])));
+		//messageLog.Message(EMessageSeverity::Info,
+		//	FText::FromString(FString::Printf(TEXT("Point %d: (%f, %f, %f)"), i, x[0], x[1], x[2])));
 	}
 
 	// create a cell array data to get all the polygons from the polygon data
@@ -123,6 +123,9 @@ void AMarchingCubes::MarchingCubes(FString filename, FString isoValueStr)
 	surface->ComputeNormalsOn();
 	surface->SetValue(0, isoValue);
 	surface->Update();
+
+	// gets iso value range. USE!!!
+	//reader->GetOutput()->GetScalarRange();
 
 	polyData = surface->GetOutput();
 
