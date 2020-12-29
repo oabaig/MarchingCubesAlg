@@ -23,23 +23,39 @@ class MARCHINGCUBESALG_API AMarchingCubes : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AMarchingCubes();
 
 protected:
-	void GenerateMesh();
+	void GenerateMeshs();
 	UPROPERTY(VisibleAnywhere)
 		USceneComponent* ThisScene;
 	UPROPERTY(VisibleAnywhere)
 		UProceduralMeshComponent* mesh;
 
 public:
-	UFUNCTION(BlueprintCallable) void MarchingCubes(FString filename, FString isoValueStr);
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh parameters")
-	//	FVector CubeRadius = FVector(100.0f, 100.0f, 100.0f);
+	UFUNCTION(BlueprintCallable) void MarchingCubes();
+	UFUNCTION(BlueprintCallable) void SetFileName(FString filename);
+	UFUNCTION(BlueprintCallable) void IsoValueRange(FString isoValueMinimum, FString isoValueMaximum, FString stepSize);
+	UFUNCTION(BlueprintCallable) void DrawMesh(FString isoValueStr);
 
 private:
-	TArray<int32> Triangles;
+	FString fileName;
 	vtkSmartPointer<vtkPolyData> polyData;
-
+	vtkSmartPointer<vtkDataSetReader> reader;
+	int numElements;
+	int isoCounter;
+	double isoValue;
+	double prevIsoValue;
+	double isoValueMin;
+	double isoValueMax;
+	double step;
+	struct MeshData {
+		int element;
+		double isoValue;
+		TArray<int32> Triangles;
+		TArray<FVector> vertices;
+		TArray<FLinearColor> vertexColors;
+		TArray<FVector> normals;
+	};
+	MeshData* meshData;
 };
