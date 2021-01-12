@@ -28,9 +28,10 @@ AMarchingCubes::AMarchingCubes()
 	isoValue = 0;
 	virtualIsoValue = 0;
 	currElement = 0;
+	step = 0;
 
-	IsoValueRange("-3007", "725", "10.0");
-	//IsoValueRange("-10", "10", "1.0");
+	//IsoValueRange("-3007", "725", "10.0");
+	IsoValueRange("-3007", "725", "1.0");
 }
 
 void AMarchingCubes::GenerateMeshs()
@@ -41,8 +42,8 @@ void AMarchingCubes::GenerateMeshs()
 	TArray<FVector> normals;
 
 	// output number of points
-	auto messageLog = FMessageLog("Points");
-	messageLog.Open(EMessageSeverity::Info, true);
+	//auto messageLog = FMessageLog("Points");
+	//messageLog.Open(EMessageSeverity::Info, true);
 
 	// output all points
 	// and store all the points into a vector containing all the vertices
@@ -53,8 +54,8 @@ void AMarchingCubes::GenerateMeshs()
 		vertices.Add(FVector(x[0], x[1], x[2]));
 		vertexColors.Add(FLinearColor(FColor::White));
 
-		messageLog.Message(EMessageSeverity::Info,
-			FText::FromString(FString::Printf(TEXT("Point %d: (%f, %f, %f)"), i, x[0], x[1], x[2])));
+		//messageLog.Message(EMessageSeverity::Info,
+		//	FText::FromString(FString::Printf(TEXT("Point %d: (%f, %f, %f)"), i, x[0], x[1], x[2])));
 	}
 	meshData[isoCounter].vertices = vertices;
 	meshData[isoCounter].vertexColors = vertexColors;
@@ -151,6 +152,18 @@ void AMarchingCubes::IncrementElement(float increment)
 		currElement = numElements;
 	}
 }
+
+
+void AMarchingCubes::IncreaseSpeed()
+{
+	step = 10.0;
+}
+
+void AMarchingCubes::DecreaseSpeed()
+{
+	step = 1.0;
+}
+
 
 void AMarchingCubes::MarchingCubes()
 {	

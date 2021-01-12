@@ -39,6 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable) void DrawMesh();
 	UFUNCTION(BlueprintCallable) void IncrementIsoValue(float newIsoValue);
 	UFUNCTION(BlueprintCallable) void IncrementElement(float increment);
+	UFUNCTION(BlueprintCallable) void IncreaseSpeed();
+	UFUNCTION(BlueprintCallable) void DecreaseSpeed();
 
 private:
 	FString fileName;
