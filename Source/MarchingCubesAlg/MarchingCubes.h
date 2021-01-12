@@ -36,19 +36,26 @@ public:
 	UFUNCTION(BlueprintCallable) void MarchingCubes();
 	UFUNCTION(BlueprintCallable) void SetFileName(FString filename);
 	UFUNCTION(BlueprintCallable) void IsoValueRange(FString isoValueMinimum, FString isoValueMaximum, FString stepSize);
-	UFUNCTION(BlueprintCallable) void DrawMesh(FString isoValueStr);
+	UFUNCTION(BlueprintCallable) void DrawMesh();
+	UFUNCTION(BlueprintCallable) void IncrementIsoValue(float newIsoValue);
+	UFUNCTION(BlueprintCallable) void IncrementElement(float increment);
 
 private:
 	FString fileName;
 	vtkSmartPointer<vtkPolyData> polyData;
 	vtkSmartPointer<vtkDataSetReader> reader;
+	vtkSmartPointer<vtkMarchingCubes> surface;
 	int numElements;
 	int isoCounter;
 	double isoValue;
+	double virtualIsoValue;
 	double prevIsoValue;
 	double isoValueMin;
 	double isoValueMax;
+	bool isoSet;
 	double step;
+	int currElement;
+	int prevElement;
 	struct MeshData {
 		int element;
 		double isoValue;
