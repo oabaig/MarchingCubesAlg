@@ -29,6 +29,7 @@ AMarchingCubes::AMarchingCubes()
 	virtualIsoValue = 0;
 	currElement = 0;
 	step = 0;
+	elementIncrementSpeed = 1.0;
 
 	//IsoValueRange("-3007", "725", "10.0");
 	IsoValueRange("-3007", "725", "1.0");
@@ -144,7 +145,7 @@ void AMarchingCubes::IncrementIsoValue(float newIsoValue)
 
 void AMarchingCubes::IncrementElement(float increment)
 {
-	currElement += increment;
+	currElement += increment * elementIncrementSpeed;
 	if (currElement < 0) {
 		currElement = 0;
 	}
@@ -156,12 +157,12 @@ void AMarchingCubes::IncrementElement(float increment)
 
 void AMarchingCubes::IncreaseSpeed()
 {
-	step = 10.0;
+	elementIncrementSpeed = 10.0;
 }
 
 void AMarchingCubes::DecreaseSpeed()
 {
-	step = 1.0;
+	elementIncrementSpeed = 1.0;
 }
 
 

@@ -56,6 +56,7 @@ private:
 	double isoValueMax;
 	bool isoSet;
 	double step;
+	int elementIncrementSpeed;
 	int currElement;
 	int prevElement;
 	struct MeshData {
