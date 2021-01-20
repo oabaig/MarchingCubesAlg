@@ -42,10 +42,6 @@ void AMarchingCubes::GenerateMeshs()
 	TArray<FLinearColor> vertexColors;
 	TArray<FVector> normals;
 
-	// output number of points
-	//auto messageLog = FMessageLog("Points");
-	//messageLog.Open(EMessageSeverity::Info, true);
-
 	// output all points
 	// and store all the points into a vector containing all the vertices
 	double x[3];
@@ -54,9 +50,6 @@ void AMarchingCubes::GenerateMeshs()
 		polyData->GetPoint(i, x);
 		vertices.Add(FVector(x[0], x[1], x[2]));
 		vertexColors.Add(FLinearColor(FColor::White));
-
-		//messageLog.Message(EMessageSeverity::Info,
-		//	FText::FromString(FString::Printf(TEXT("Point %d: (%f, %f, %f)"), i, x[0], x[1], x[2])));
 	}
 	meshData[isoCounter].vertices = vertices;
 	meshData[isoCounter].vertexColors = vertexColors;
@@ -66,10 +59,6 @@ void AMarchingCubes::GenerateMeshs()
 		vtkSmartPointer<vtkCellArray>::New();
 
 	cellArray = polyData->GetPolys();
-
-	// output number of triangles
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-	//	TEXT("Number of Vertices: ") + FString::SanitizeFloat(cellArray->GetSize()));
 
 	// create a list that stores the points, in order, for each triangle
 	// get each vertice and add it into a triangles vector in order
@@ -95,13 +84,8 @@ void AMarchingCubes::GenerateMeshs()
 	}
 	meshData[isoCounter].Triangles = Triangles;
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-		//TEXT("Number of Triangles: ") + FString::FromInt(numTriangles));
-
 	vtkDataArray* vtkNormalArray;
 	vtkNormalArray = polyData->GetPointData()->GetNormals();
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-	//	TEXT("Number of Tuples: ") + FString::FromInt(vtkNormalArray->GetNumberOfTuples()));
 	
 	double testDouble[3];
 	for (int i = 0; i < vtkNormalArray->GetNumberOfTuples(); i++) {
@@ -119,15 +103,6 @@ void AMarchingCubes::DrawMesh() {
 		
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
 			TEXT("iso value: ") + FString::FromInt(i) + TEXT(" struct iso value: ") + FString::SanitizeFloat(meshData[i].isoValue));
-		/*GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			TEXT("Num Vertices: ") + FString::SanitizeFloat(meshData[i].vertices.Num()));
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			TEXT("Num Triangles: ") + FString::SanitizeFloat(meshData[i].Triangles.Num()));
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			TEXT("Num normals: ") + FString::SanitizeFloat(meshData[i].normals.Num()));
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			TEXT("Num vertex colors: ") + FString::SanitizeFloat(meshData[i].vertexColors.Num()));
-			*/
 		// draws the vertices and triangles in Unreal
 		// most of the fields are unused for the purpose of this project, so just create empty arrays
 		mesh->CreateMeshSection_LinearColor(0, meshData[i].vertices, meshData[i].Triangles, meshData[i].normals,
@@ -173,7 +148,6 @@ void AMarchingCubes::MarchingCubes()
 			meshData[isoCounter].isoValue = virtualIsoValue;
 			meshData[isoCounter].element = isoCounter;
 
-			//mesh->ClearAllMeshSections();
 			polyData = vtkSmartPointer<vtkPolyData>::New();
 
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
@@ -212,15 +186,8 @@ void AMarchingCubes::IsoValueRange(FString isoValueMinimum, FString isoValueMaxi
 	isoValueMax = FCString::Atod(*isoValueMaximum);
 	step = FCString::Atod(*stepSize);
 
-	/*
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-		TEXT("Min Iso Value: ") + FString::SanitizeFloat(isoValueMin));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-		TEXT("Max Iso Value: ") + FString::SanitizeFloat(isoValueMax));
-	*/
 	numElements = (isoValueMax - isoValueMin) / step;
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-		//TEXT("Num Elements: ") + FString::SanitizeFloat(numElements));
+
 	virtualIsoValue = isoValueMin;
 	isoSet = true;
 
