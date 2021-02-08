@@ -3,6 +3,7 @@
 #include "MarchingCubes.h"
 #include "Engine.h"
 
+
 // Sets default values
 AMarchingCubes::AMarchingCubes()
 {
@@ -17,6 +18,9 @@ AMarchingCubes::AMarchingCubes()
 	
 	// defualt scale
 	SetActorScale3D(FVector(100.0f, 100.0f, 100.0f));
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> MaterialOb(TEXT("Material'/Game/VertexMat.VertexMat'"));
+	Material = MaterialOb.Object;
 
 	prevIsoValue = 0;
 	prevElement = 0;
@@ -49,8 +53,9 @@ void AMarchingCubes::GenerateMeshs()
 	{
 		polyData->GetPoint(i, x);
 		vertices.Add(FVector(x[0], x[1], x[2]));
-		vertexColors.Add(FLinearColor(FColor::White));
+		vertexColors.Add(FLinearColor(FMath::RandRange(0, 100), FMath::RandRange(0, 100), FMath::RandRange(0, 100), 255));
 	}
+	//vertexColors.Init(FLinearColor::Yellow, vertices.Num());
 	meshData[isoCounter].vertices = vertices;
 	meshData[isoCounter].vertexColors = vertexColors;
 
@@ -107,6 +112,7 @@ void AMarchingCubes::DrawMesh() {
 		// most of the fields are unused for the purpose of this project, so just create empty arrays
 		mesh->CreateMeshSection_LinearColor(0, meshData[i].vertices, meshData[i].Triangles, meshData[i].normals,
 			TArray<FVector2D>(), meshData[i].vertexColors, TArray<FProcMeshTangent>(), true);
+		mesh->SetMaterial(0, Material);
 
 		// Enable collision data
 		mesh->ContainsPhysicsTriMeshData(true);
@@ -129,15 +135,14 @@ void AMarchingCubes::IncrementElement(float increment)
 	}
 }
 
-
-void AMarchingCubes::IncreaseSpeed()
+void AMarchingCubes::IncreaseSpeed(int amount)
 {
-	elementIncrementSpeed = 10.0;
+	elementIncrementSpeed = amount;
 }
 
-void AMarchingCubes::DecreaseSpeed()
+void AMarchingCubes::DecreaseSpeed(int amount)
 {
-	elementIncrementSpeed = 1.0;
+	elementIncrementSpeed = amount;
 }
 
 
@@ -150,8 +155,8 @@ void AMarchingCubes::MarchingCubes()
 
 			polyData = vtkSmartPointer<vtkPolyData>::New();
 
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-				TEXT("iso value: ") + FString::SanitizeFloat(meshData[isoCounter].isoValue));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+				//TEXT("iso value: ") + FString::SanitizeFloat(meshData[isoCounter].isoValue));
 
 			surface->SetValue(0, virtualIsoValue);
 			surface->Update();

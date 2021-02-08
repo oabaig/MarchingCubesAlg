@@ -31,6 +31,9 @@ protected:
 		USceneComponent* ThisScene;
 	UPROPERTY(VisibleAnywhere)
 		UProceduralMeshComponent* mesh;
+	UPROPERTY(VisibleAnywhere, Category = ProcMesh)
+		UMaterial* Material;
+
 
 public:
 	UFUNCTION(BlueprintCallable) void MarchingCubes();
@@ -39,8 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable) void DrawMesh();
 	UFUNCTION(BlueprintCallable) void IncrementIsoValue(float newIsoValue);
 	UFUNCTION(BlueprintCallable) void IncrementElement(float increment);
-	UFUNCTION(BlueprintCallable) void IncreaseSpeed();
-	UFUNCTION(BlueprintCallable) void DecreaseSpeed();
+	UFUNCTION(BlueprintCallable) void IncreaseSpeed(int amount);
+	UFUNCTION(BlueprintCallable) void DecreaseSpeed(int amount);
 
 private:
 	FString fileName;
