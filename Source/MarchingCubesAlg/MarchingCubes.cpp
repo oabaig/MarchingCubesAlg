@@ -41,10 +41,12 @@ AMarchingCubes::AMarchingCubes()
 
 void AMarchingCubes::GenerateMeshs()
 {
-	TArray<int32> Triangles;
-	TArray<FVector> vertices;
-	TArray<FLinearColor> vertexColors;
-	TArray<FVector> normals;
+	Triangles.Empty();
+	vertices.Empty();
+	vertexColors.Empty();
+	normals.Empty();
+
+	mesh->ClearAllMeshSections();
 
 	// output all points
 	// and store all the points into a vector containing all the vertices
@@ -53,11 +55,11 @@ void AMarchingCubes::GenerateMeshs()
 	{
 		polyData->GetPoint(i, x);
 		vertices.Add(FVector(x[0], x[1], x[2]));
-		vertexColors.Add(FLinearColor(FMath::RandRange(0, 100), FMath::RandRange(0, 100), FMath::RandRange(0, 100), 255));
+		vertexColors.Add(FLinearColor::Blue);
 	}
 	//vertexColors.Init(FLinearColor::Yellow, vertices.Num());
-	meshData[isoCounter].vertices = vertices;
-	meshData[isoCounter].vertexColors = vertexColors;
+	//meshData[isoCounter].vertices = vertices;
+	//meshData[isoCounter].vertexColors = vertexColors;
 
 	// create a cell array data to get all the polygons from the polygon data
 	vtkSmartPointer<vtkCellArray> cellArray =
@@ -71,7 +73,7 @@ void AMarchingCubes::GenerateMeshs()
 		vtkSmartPointer<vtkIdList>::New();
 	int h;
 	int numTriangles = 0;
-	Triangles.Empty();
+	
 	for (int i = 0; i < polyData->GetNumberOfPolys(); i++) {
 		// GetNextCell returns 0 if end of cells, 1 if else
 		h = cellArray->GetNextCell(p);
@@ -87,41 +89,49 @@ void AMarchingCubes::GenerateMeshs()
 			Triangles.Add(p->GetId(2));
 		}
 	}
-	meshData[isoCounter].Triangles = Triangles;
+	//meshData[isoCounter].Triangles = Triangles;
 
 	vtkDataArray* vtkNormalArray;
 	vtkNormalArray = polyData->GetPointData()->GetNormals();
+	
 	
 	double testDouble[3];
 	for (int i = 0; i < vtkNormalArray->GetNumberOfTuples(); i++) {
 		vtkNormalArray->GetTuple(i, testDouble);
 		normals.Add(FVector(testDouble[0], testDouble[1], testDouble[2]));
 	}
-	meshData[isoCounter].normals = normals;
+	//meshData[isoCounter].normals = normals;
 }
 
 void AMarchingCubes::DrawMesh() {
-	if (prevElement != currElement) {
-		prevElement = currElement;
-		//int i = (isoValue * ((isoValueMax - isoValueMin) / numElements)) / step;
-		int i = currElement;
+	prevElement = currElement;
+	int i = currElement;
 		
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			TEXT("iso value: ") + FString::FromInt(i) + TEXT(" struct iso value: ") + FString::SanitizeFloat(meshData[i].isoValue));
-		// draws the vertices and triangles in Unreal
-		// most of the fields are unused for the purpose of this project, so just create empty arrays
-		mesh->CreateMeshSection_LinearColor(0, meshData[i].vertices, meshData[i].Triangles, meshData[i].normals,
-			TArray<FVector2D>(), meshData[i].vertexColors, TArray<FProcMeshTangent>(), true);
-		mesh->SetMaterial(0, Material);
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+		//TEXT("iso value: ") + FString::FromInt(i) + TEXT(" struct iso value: ") + FString::SanitizeFloat(meshData[i].isoValue));
 
-		// Enable collision data
-		mesh->ContainsPhysicsTriMeshData(true);
-	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+		TEXT("iso value: ") + FString::FromInt(isoValue));
+
+	// draws the vertices and triangles in Unreal
+	// most of the fields are unused for the purpose of this project, so just create empty arrays
+	mesh->CreateMeshSection_LinearColor(0, vertices, Triangles, normals,
+		TArray<FVector2D>(), vertexColors, TArray<FProcMeshTangent>(), true);
+	mesh->SetMaterial(0, Material);
+
+	// Enable collision data
+	mesh->ContainsPhysicsTriMeshData(true);
 }
 
 void AMarchingCubes::IncrementIsoValue(float newIsoValue)
 {
-	isoValue += newIsoValue * step;
+	isoValue += newIsoValue * elementIncrementSpeed;
+	if (isoValue > isoValueMax) {
+		isoValue = isoValueMax;
+	}
+	else if (isoValue < isoValueMin) {
+		isoValue = isoValueMin;
+	}
 }
 
 void AMarchingCubes::IncrementElement(float increment)
@@ -148,6 +158,7 @@ void AMarchingCubes::DecreaseSpeed(int amount)
 
 void AMarchingCubes::MarchingCubes()
 {	
+	/*
 	if (isoSet && !fileName.IsEmpty()) {
 		for (isoCounter = 0; isoCounter < numElements + 1; isoCounter++) {
 			meshData[isoCounter].isoValue = virtualIsoValue;
@@ -171,6 +182,19 @@ void AMarchingCubes::MarchingCubes()
 		}
 		isoValue = 0;
 		prevIsoValue = -1;
+		DrawMesh();
+	}*/
+
+	if (isoSet && !fileName.IsEmpty()) {
+		
+		polyData = vtkSmartPointer<vtkPolyData>::New();
+		//surface = vtkSmartPointer<vtkMarchingCubes>::New();
+		surface->SetValue(0, isoValue);
+		surface->Update();
+
+		polyData = surface->GetOutput();
+
+		GenerateMeshs();
 		DrawMesh();
 	}
 }

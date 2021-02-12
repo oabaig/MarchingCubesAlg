@@ -71,4 +71,8 @@ private:
 		TArray<FVector> normals;
 	};
 	MeshData* meshData;
+	TArray<int32> Triangles;
+	TArray<FVector> vertices;
+	TArray<FLinearColor> vertexColors;
+	TArray<FVector> normals;
 };
