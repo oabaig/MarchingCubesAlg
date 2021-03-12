@@ -18,7 +18,7 @@
 #include "MarchingCubes.generated.h"
 
 UCLASS()
-class MARCHINGCUBESALG_API AMarchingCubes : public AActor
+class VMARCHINGCUBESALG_API AMarchingCubes : public AActor
 {
 	GENERATED_BODY()
 
@@ -26,51 +26,37 @@ public:
 	AMarchingCubes();
 
 protected:
-	void GenerateMeshs();
+	// Generates the Mesh
+	void GenerateMesh();
 	UPROPERTY(VisibleAnywhere)
 		USceneComponent* ThisScene;
 	UPROPERTY(VisibleAnywhere)
 		UProceduralMeshComponent* mesh;
+	// Material of object
 	UPROPERTY(VisibleAnywhere, Category = ProcMesh)
 		UMaterial* Material;
 
 
 public:
 	UFUNCTION(BlueprintCallable) void MarchingCubes();
-	UFUNCTION(BlueprintCallable) void SetFileName(FString filename);
-	UFUNCTION(BlueprintCallable) void IsoValueRange(FString isoValueMinimum, FString isoValueMaximum, FString stepSize);
-	UFUNCTION(BlueprintCallable) void DrawMesh();
-	UFUNCTION(BlueprintCallable) void IncrementIsoValue(float newIsoValue);
-	UFUNCTION(BlueprintCallable) void IncrementElement(float increment);
-	UFUNCTION(BlueprintCallable) void IncreaseSpeed(int amount);
-	UFUNCTION(BlueprintCallable) void DecreaseSpeed(int amount);
+	UFUNCTION(BlueprintCallable) void SetFileName(FString filename); // Sets file name
+	UFUNCTION(BlueprintCallable) void IsoValueRange(int isoValueMinimum, int isoValueMaximum); // Gets the range of iso values
+	UFUNCTION(BlueprintCallable) void DrawMesh(); // Draws mesh in space
+	UFUNCTION(BlueprintCallable) void IncrementIsoValue(float newIsoValue); // increments iso value
+	UFUNCTION(BlueprintCallable) void IncreaseSpeed(int amount); // increases increment speed
+	UFUNCTION(BlueprintCallable) void DecreaseSpeed(int amount); // decreases increment speed
 
 private:
-	FString fileName;
 	vtkSmartPointer<vtkPolyData> polyData;
 	vtkSmartPointer<vtkDataSetReader> reader;
 	vtkSmartPointer<vtkMarchingCubes> surface;
 	int numElements;
 	int isoCounter;
 	double isoValue;
-	double virtualIsoValue;
-	double prevIsoValue;
 	double isoValueMin;
 	double isoValueMax;
-	bool isoSet;
-	double step;
 	int elementIncrementSpeed;
 	int currElement;
-	int prevElement;
-	struct MeshData {
-		int element;
-		double isoValue;
-		TArray<int32> Triangles;
-		TArray<FVector> vertices;
-		TArray<FLinearColor> vertexColors;
-		TArray<FVector> normals;
-	};
-	MeshData* meshData;
 	TArray<int32> Triangles;
 	TArray<FVector> vertices;
 	TArray<FLinearColor> vertexColors;
