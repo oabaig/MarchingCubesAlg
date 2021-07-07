@@ -1,0 +1,3 @@
+[submodule "stim"]
+	path = stim
+	url = https://github.com/dmayerich/stim.git

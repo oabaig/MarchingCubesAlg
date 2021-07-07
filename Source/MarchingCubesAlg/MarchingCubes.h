@@ -18,7 +18,7 @@
 #include "MarchingCubes.generated.h"
 
 UCLASS()
-class VMARCHINGCUBESALG_API AMarchingCubes : public AActor
+class MARCHINGCUBESALG_API AMarchingCubes : public AActor
 {
 	GENERATED_BODY()
 
