@@ -267,13 +267,32 @@ class MainWindow(Qt.QMainWindow):
         if hasattr(self, 'isoSurf_actor'):
             self.ren.RemoveActor(self.isoSurf_actor)
             
-        if self.qt_isoSurf_checkbox.isChecked() == True:    
-            print("Test")        
+        if self.qt_isoSurf_checkbox.isChecked() == True:        
             isoSurfExtractor = vtk.vtkMarchingCubes()
-            isoSurfExtractor.SetInputData(self.volumeReader)
+            isoSurfExtractor.SetInputConnection(self.reader.GetOutputPort())
             isoSurfExtractor.ComputeNormalsOn()
             isoSurfExtractor.SetValue(0, 10) # change 10 to isoValue
             isoSurfExtractor.Update()
+
+            isoSurfStripper = vtk.vtkStripper()
+            isoSurfStripper.SetInputConnection(isoSurfExtractor.GetOutputPort())
+            isoSurfStripper.Update()
+
+            self.isoSurfMapper = vtk.vtkPolyDataMapper()
+            self.isoSurfMapper.SetInputConnection(isoSurfStripper.GetOutputPort())
+            self.isoSurfMapper.ScalarVisibilityOff()
+
+            self.isoSurfActor = vtk.vtkActor()
+            self.isoSurfActor.SetMapper(self.isoSurfMapper)
+            colors = vtk.vtkNamedColors()
+            colors.SetColor("myColor", [255, 125, 64, 255])
+            self.isoSurfActor.GetProperty().SetDiffuseColor(colors.GetColor3d("myColor"))
+            self.isoSurfActor.GetProperty().SetSpecular(0.3)
+            self.isoSurfActor.GetProperty().SetSpecularPower(20)
+
+            self.isoSurfActor.GetProperty().SetOpacity(0.5)
+            self.ren.AddActor(self.isoSurfActor)
+
        
         # Re-render the screen
         self.vtkWidget.GetRenderWindow().Render()
@@ -320,9 +339,9 @@ class MainWindow(Qt.QMainWindow):
         
         # The volume will be displayed by ray-cast alpha compositing.
         # A ray-cast mapper is needed to do the ray-casting.
-        volumeMapper = vtk.vtkFixedPointVolumeRayCastMapper()
-
-    
+        #volumeMapper = vtk.vtkFixedPointVolumeRayCastMapper()
+        volumeMapper = vtk.vtkSmartVolumeMapper()
+        volumeMapper.SetInputConnection(self.reader.GetOutputPort())
 
         # The following added the control points to the color transfer function
         # The control points are loaded from a file
@@ -339,17 +358,32 @@ class MainWindow(Qt.QMainWindow):
 
     
         # Use gradient information to enhanced DVR
-        # volumeGradientOpacity = vtk.vtkPiecewiseFunction()
-        # volumeGradientOpacity.AddPoint(0, 0.0)
-        # volumeGradientOpacity.AddPoint(90, 0.5)
-        # volumeGradientOpacity.AddPoint(100, 1.0)
-    
+        volumeGradientOpacity = vtk.vtkPiecewiseFunction()
+        volumeGradientOpacity.AddPoint(0, 0.0)
+        volumeGradientOpacity.AddPoint(90, 0.5)
+        volumeGradientOpacity.AddPoint(100, 1.0)
+
+
         
         # Next, you should set the volume property
         # 
-    
+        volumeProperty = vtk.vtkVolumeProperty() 
+        volumeProperty.SetColor(volumeColor) 
+        volumeProperty.SetScalarOpacity(volumeScalarOpacity) 
+        volumeProperty.SetGradientOpacity(volumeGradientOpacity) 
+        volumeProperty.SetInterpolationTypeToLinear()
+
+        volumeProperty.ShadeOn() 
+        volumeProperty.SetAmbient(0.4) 
+        volumeProperty.SetDiffuse(0.6) 
+        volumeProperty.SetSpecular(0.2)
         # Create a vtkVolume object 
         # set its mapper created above and its property.
+        volume = vtk.vtkVolume() 
+        volume.SetMapper(volumeMapper) 
+        volume.SetProperty(volumeProperty)
+
+        self.volume = volume
     
         # Finally, add the volume to the renderer
         self.ren.AddViewProp(self.volume)
