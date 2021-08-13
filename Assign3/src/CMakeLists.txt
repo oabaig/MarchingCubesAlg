@@ -13,6 +13,7 @@ find_package(VTK COMPONENTS
   IOLegacy
   vtkRenderingCore
   vtkRenderingFreeType
+  RenderingVolumeOpenGL2
   vtkRenderingOpenGL2 QUIET)
 if (NOT VTK_FOUND)
   message("Skipping MarchingCubes: ${VTK_NOT_FOUND_MESSAGE}")
