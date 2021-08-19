@@ -86,3 +86,5 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+Assign3/assign3_qtpyvtk_skeleton.py
+Assign3/Assign3.pdf
