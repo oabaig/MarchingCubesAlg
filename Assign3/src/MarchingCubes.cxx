@@ -15,6 +15,9 @@
 #include "vtkStructuredPoints.h"
 #include "vtkImageData.h"
 #include "vtkImageMapper3D.h"
+#include "vtkJPEGWriter.h"
+
+#include <sstream>
 
 /* NOTES
 	if you get an error that says '(method) is not a member of vtkSmartPointer<(class)>', make sure you replace . to ->
@@ -88,7 +91,27 @@ int main(){
 	
 	vtkSmartPointer<vtkImageActor> xy_plane = vtkSmartPointer<vtkImageActor>::New();
 	xy_plane->GetMapper()->SetInputConnection(xy_plane_Colors->GetOutputPort());
-	xy_plane->SetDisplayExtent(0, dim[0], 0, dim[1], current_zID, current_zID);
+
+	for (current_zID; current_zID < 64; current_zID++) {
+		xy_plane->SetDisplayExtent(0, dim[0], 0, dim[1], current_zID, current_zID);
+
+		std::stringstream ss;
+
+		ss << current_zID;
+
+		std::string prefixName = "test";
+		std::string suffixName = ".jpg";
+		std::string stringInt;
+
+		ss >> stringInt;
+
+		std::string fname = prefixName + stringInt + suffixName;
+
+		vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
+		jpegWriter->SetInputData(xy_plane->GetInput()); // fix this me thinks
+		jpegWriter->SetFileName(fname.c_str());
+		jpegWriter->Write();
+	}
 
 	renderer->AddActor(xy_plane);
 	// end xy plane cutter
