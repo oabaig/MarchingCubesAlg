@@ -8,6 +8,17 @@
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkImageMapToColors.h"
+#include "vtkImageActor.h"
+#include "vtkLookupTable.h"
+#include "vtkDataSet.h"
+#include "vtkStructuredPoints.h"
+#include "vtkImageData.h"
+#include "vtkImageMapper3D.h"
+
+/* NOTES
+	if you get an error that says '(method) is not a member of vtkSmartPointer<(class)>', make sure you replace . to ->
+*/
 
 int main(){
 	vtkSmartPointer<vtkDataSetReader> reader = vtkSmartPointer<vtkDataSetReader>::New();
@@ -58,11 +69,39 @@ int main(){
 	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
 	renderWindowInteractor->SetRenderWindow(renderWindow);
 
+	// xy plane cutter
+	int current_zID = 0;
+
+	vtkSmartPointer<vtkLookupTable> bwLut = vtkSmartPointer<vtkLookupTable>::New();
+	bwLut->SetTableRange(0, 2);
+	bwLut->SetSaturationRange(0, 0);
+	bwLut->SetHueRange(0, 0);
+	bwLut->SetValueRange(0, 1);
+	bwLut->Build();
+
+	vtkSmartPointer<vtkImageMapToColors> xy_plane_Colors = vtkSmartPointer<vtkImageMapToColors>::New();
+	xy_plane_Colors->SetInputConnection(reader->GetOutputPort());
+	xy_plane_Colors->SetLookupTable(bwLut);
+	xy_plane_Colors->Update();
+	
+	int* dim = reader->GetStructuredPointsOutput()->GetDimensions();
+	
+	vtkSmartPointer<vtkImageActor> xy_plane = vtkSmartPointer<vtkImageActor>::New();
+	xy_plane->GetMapper()->SetInputConnection(xy_plane_Colors->GetOutputPort());
+	xy_plane->SetDisplayExtent(0, dim[0], 0, dim[1], current_zID, current_zID);
+
+	renderer->AddActor(xy_plane);
+	// end xy plane cutter
+
 	renderer->AddViewProp(volume);
 	renderer->ResetCamera();
 
 	renderWindow->Render();
 	renderWindowInteractor->Start();
+
+
+
+
 	
 	return 0;
 }

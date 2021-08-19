@@ -11,6 +11,7 @@ find_package(VTK COMPONENTS
   vtkImagingHybrid
   vtkInteractionStyle
   IOLegacy
+  CommonDataModel
   vtkRenderingCore
   vtkRenderingFreeType
   RenderingVolumeOpenGL2
