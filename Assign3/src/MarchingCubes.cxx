@@ -16,8 +16,11 @@
 #include "vtkImageData.h"
 #include "vtkImageMapper3D.h"
 #include "vtkJPEGWriter.h"
+#include "vtkExtractVOI.h"
+#include "vtkImageAppend.h"
 
 #include <sstream>
+#include <iostream>
 
 /* NOTES
 	if you get an error that says '(method) is not a member of vtkSmartPointer<(class)>', make sure you replace . to ->
@@ -88,13 +91,20 @@ int main(){
 	xy_plane_Colors->Update();
 	
 	int* dim = reader->GetStructuredPointsOutput()->GetDimensions();
+
+	//std::cout << dim[0] << " " << dim[1] << std::endl;
 	
 	vtkSmartPointer<vtkImageActor> xy_plane = vtkSmartPointer<vtkImageActor>::New();
 	xy_plane->GetMapper()->SetInputConnection(xy_plane_Colors->GetOutputPort());
+	vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
+
+	vtkSmartPointer<vtkImageAppend> images = vtkSmartPointer<vtkImageAppend>::New();
+	images->SetAppendAxis(1);
 
 	for (current_zID; current_zID < 64; current_zID++) {
-		xy_plane->SetDisplayExtent(0, dim[0], 0, dim[1], current_zID, current_zID);
-
+		xy_plane->SetDisplayExtent(0, 128, 0, 128, current_zID, current_zID);
+		xy_plane->Update();
+		
 		std::stringstream ss;
 
 		ss << current_zID;
@@ -105,13 +115,26 @@ int main(){
 
 		ss >> stringInt;
 
-		std::string fname = prefixName + stringInt + suffixName;
+		vtkSmartPointer<vtkExtractVOI> voi = vtkSmartPointer<vtkExtractVOI>::New();
+		voi->SetInputData(xy_plane->GetInput());
 
-		vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
-		jpegWriter->SetInputData(xy_plane->GetInput()); // fix this me thinks
+		voi->SetVOI(0, 127, 0, 31, current_zID, current_zID);
+		voi->Update();
+
+		std::string fname = prefixName + stringInt + suffixName;	
+
+		jpegWriter->SetInputData(voi->GetOutput());
 		jpegWriter->SetFileName(fname.c_str());
 		jpegWriter->Write();
+
+		images->AddInputData(voi->GetOutput());
+		
 	}
+	images->Update();
+	jpegWriter->SetInputData(images->GetOutput());
+	jpegWriter->SetFileName("appendedImages.jpg");
+	jpegWriter->Write();
+	
 
 	renderer->AddActor(xy_plane);
 	// end xy plane cutter
