@@ -18,6 +18,8 @@
 #include "vtkJPEGWriter.h"
 #include "vtkExtractVOI.h"
 #include "vtkImageAppend.h"
+#include "vtkJPEGReader.h"
+#include "vtkImageData.h"
 
 #include <sstream>
 #include <iostream>
@@ -98,8 +100,8 @@ int main(){
 	xy_plane->GetMapper()->SetInputConnection(xy_plane_Colors->GetOutputPort());
 	vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
 
-	vtkSmartPointer<vtkImageAppend> images = vtkSmartPointer<vtkImageAppend>::New();
-	images->SetAppendAxis(1);
+	vtkSmartPointer<vtkExtractVOI> voi = vtkSmartPointer<vtkExtractVOI>::New();
+	voi->SetInputData(xy_plane->GetInput());
 
 	for (current_zID; current_zID < 64; current_zID++) {
 		xy_plane->SetDisplayExtent(0, 128, 0, 128, current_zID, current_zID);
@@ -115,27 +117,74 @@ int main(){
 
 		ss >> stringInt;
 
-		vtkSmartPointer<vtkExtractVOI> voi = vtkSmartPointer<vtkExtractVOI>::New();
-		voi->SetInputData(xy_plane->GetInput());
-
 		voi->SetVOI(0, 127, 0, 31, current_zID, current_zID);
 		voi->Update();
 
-		std::string fname = prefixName + stringInt + suffixName;	
+		std::string fname = prefixName + stringInt + suffixName;
+
+		//images->AddInputData(voi->GetOutput());
+
+		//vtkSmartPointer<vtkImageData> outputImage = vtkSmartPointer<vtkImageData>::New();
+
+		//outputImage->ShallowCopy(voi->GetOutput());
+		//images->AddInputData(outputImage);
+		//images->Update();
 
 		jpegWriter->SetInputData(voi->GetOutput());
 		jpegWriter->SetFileName(fname.c_str());
 		jpegWriter->Write();
+	}
+	/*
+	jpegWriter->SetFileName("appendedImages.jpg");
+	jpegWriter->SetInputData(images->GetOutput());
+	jpegWriter->Write();*/
+	
 
-		images->AddInputData(voi->GetOutput());
+	vtkSmartPointer<vtkImageAppend> horizontalImages = vtkSmartPointer<vtkImageAppend>::New();
+
+	vtkSmartPointer<vtkImageAppend> verticalImages = vtkSmartPointer<vtkImageAppend>::New();
+	verticalImages->SetAppendAxis(1);
+	vtkSmartPointer<vtkJPEGReader> jpegReader = vtkSmartPointer<vtkJPEGReader>::New();
+
+	for (int i = 0; i < 64; i++) {
+		if (i % 8 == 0 && i > 0) {
+			horizontalImages->AddInputData(verticalImages->GetOutput());
+			horizontalImages->Update();
+
+			verticalImages->RemoveAllInputs();
+			verticalImages->SetAppendAxis(1);
+		}
+		std::stringstream ss;
+
+		ss << i;
+
+		std::string prefixName = "test";
+		std::string suffixName = ".jpg";
+		std::string stringInt;
+
+		ss >> stringInt;
+
+		std::string fname = prefixName + stringInt + suffixName;
+
+		vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
+
+		jpegReader->SetFileName(fname.c_str());
+		jpegReader->Update();
+		imageData->ShallowCopy(jpegReader->GetOutput());
+		verticalImages->AddInputData(imageData);
+		verticalImages->Update();
 		
 	}
-	images->Update();
-	jpegWriter->SetInputData(images->GetOutput());
+
+	horizontalImages->AddInputData(verticalImages->GetOutput());
+	horizontalImages->Update();
+
+	std::cout << verticalImages->GetNumberOfInputs() << std::endl;
+
+	jpegWriter->SetInputData(horizontalImages->GetOutput());
 	jpegWriter->SetFileName("appendedImages.jpg");
 	jpegWriter->Write();
 	
-
 	renderer->AddActor(xy_plane);
 	// end xy plane cutter
 
@@ -144,9 +193,6 @@ int main(){
 
 	renderWindow->Render();
 	renderWindowInteractor->Start();
-
-
-
 
 	
 	return 0;
