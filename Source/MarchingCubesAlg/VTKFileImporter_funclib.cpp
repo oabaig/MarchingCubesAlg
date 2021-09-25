@@ -2,13 +2,16 @@
 
 #include "VTKFileImporter_funclib.h"
 
-void UVTKFileImporter_funclib::SliceImages(FString filename) {
-	vtkSmartPointer<vtkDataSetReader> reader = vtkSmartPointer<vtkDataSetReader>::New();
+UVTKFileImporter_funclib::UVTKFileImporter_funclib() {
+	_reader = vtkSmartPointer<vtkDataSetReader>::New();
+}
 
-	reader->SetFileName(TCHAR_TO_ANSI(*filename));
-	reader->Update();
+void UVTKFileImporter_funclib::SetFileName(FString fname) {
+	_reader->SetFileName(TCHAR_TO_ANSI(*fname));
+	_reader->Update();
+}
 
-	// fix?
+void UVTKFileImporter_funclib::SliceImages() {
 	vtkSmartPointer<vtkLookupTable> bwLut = vtkSmartPointer<vtkLookupTable>::New();
 	bwLut->SetTableRange(0, 2);
 	bwLut->SetSaturationRange(0, 0);
@@ -17,36 +20,15 @@ void UVTKFileImporter_funclib::SliceImages(FString filename) {
 	bwLut->Build();
 
 	vtkSmartPointer<vtkImageMapToColors> xyPlaneColors = vtkSmartPointer<vtkImageMapToColors>::New();
-	xyPlaneColors->SetInputConnection(reader->GetOutputPort());
+	xyPlaneColors->SetInputConnection(_reader->GetOutputPort());
 	xyPlaneColors->SetLookupTable(bwLut);
 	xyPlaneColors->Update();
+
+	vtkSmartPointer<vtkImageActor> xyPlane = vtkSmartPointer<vtkImageActor>::New();
+	xyPlane->GetMapper()->SetInputConnection(xyPlaneColors->GetOutputPort());
 
 	vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
 
 	vtkSmartPointer<vtkExtractVOI> volumeOfInterest = vtkSmartPointer<vtkExtractVOI>::New();
-	volumeOfInterest->SetInputData(xyPlaneColors->GetOutput());
-
-	// fix
-	for (int i = 0; i < 64; i++) {
-		std::stringstream ss;
-
-		ss << i;
-		
-		// fix
-		std::string prefixName = "slice";
-		std::string suffixName = ".jpg";
-		std::string stringInt;
-
-		ss >> stringInt;
-
-		// fix
-		volumeOfInterest->SetVOI(0, 127, 0, 31, i, i);
-		volumeOfInterest->Update();
-
-		std::string fname = prefixName + stringInt + suffixName;
-
-		jpegWriter->SetInputData(volumeOfInterest->GetOutput());
-		jpegWriter->SetFileName(fname.c_str());
-		//jpegWriter->Write();
-	}
+	volumeOfInterest->SetInputData(xyPlane)
 }

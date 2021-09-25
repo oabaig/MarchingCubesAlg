@@ -8,17 +8,12 @@
 #include "vtkSmartPointer.h"
 #include "vtkDataSetReader.h"
 #include "vtkImageMapToColors.h"
-#include "vtkSmartVolumeMapper.h"
 #include "vtkJPEGWriter.h"
 #include "vtkJPEGReader.h"
 #include "vtkImageAppend.h"
 #include "vtkLookupTable.h"
 #include "vtkExtractVOI.h"
 #include "vtkImageActor.h"
-#include "vtkImageMapper3D.h"
-#include "vtkImageData.h"
-
-#include "vtkImageSliceMapper.h"
 
 #include <sstream>
 
@@ -31,7 +26,13 @@ UCLASS()
 class MARCHINGCUBESALG_API UVTKFileImporter_funclib : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+private:
+	vtkSmartPointer<vtkDataSetReader> _reader;
+
 public:
-	UFUNCTION(BlueprintCallable, Category = "Slice Images") static void SliceImages(FString filename);
+	UVTKFileImporter_funclib();
+
+	UFUNCTION(BlueprintCallable) void SetFileName(FString fname);
+	UFUNCTION(BlueprintCallable) void SliceImages();
 	
 };
