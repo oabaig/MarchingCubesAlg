@@ -12,6 +12,7 @@ void UVTKFileImporter_funclib::SetFileName(FString fname) {
 }
 
 void UVTKFileImporter_funclib::SliceImages() {
+	/*
 	vtkSmartPointer<vtkLookupTable> bwLut = vtkSmartPointer<vtkLookupTable>::New();
 	bwLut->SetTableRange(0, 2);
 	bwLut->SetSaturationRange(0, 0);
@@ -30,5 +31,5 @@ void UVTKFileImporter_funclib::SliceImages() {
 	vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
 
 	vtkSmartPointer<vtkExtractVOI> volumeOfInterest = vtkSmartPointer<vtkExtractVOI>::New();
-	volumeOfInterest->SetInputData(xyPlane)
+	volumeOfInterest->SetInputData(xyPlane)*/
 }
