@@ -15,6 +15,8 @@
 #include "vtkExtractVOI.h"
 #include "vtkImageActor.h"
 
+#include "Runtime\Core\Public\Misc\Paths.h"
+
 #include <sstream>
 
 #include "VTKFileImporter_funclib.generated.h"
@@ -26,13 +28,8 @@ UCLASS()
 class MARCHINGCUBESALG_API UVTKFileImporter_funclib : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-private:
-	vtkSmartPointer<vtkDataSetReader> _reader;
-
 public:
-	UVTKFileImporter_funclib();
 
-	UFUNCTION(BlueprintCallable) void SetFileName(FString fname);
-	UFUNCTION(BlueprintCallable) void SliceImages();
+	UFUNCTION(BlueprintCallable, Category="SliceImages") static void SliceImages(FString fname);
 	
 };

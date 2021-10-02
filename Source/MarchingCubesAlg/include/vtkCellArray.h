@@ -1115,8 +1115,8 @@ protected:
   // between 32-bit and 64-bit storage.
   struct Storage
   {
-    // Union type that switches 32 and 64 bit array storage
 #pragma warning (disable: 4582 4583)
+    // Union type that switches 32 and 64 bit array storage
     union ArraySwitch {
       ArraySwitch() {}  // handled by Storage
       ~ArraySwitch() {} // handle by Storage

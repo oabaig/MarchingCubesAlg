@@ -143,6 +143,34 @@
   }
 
 //
+// Set 'enum class' type.  Creates member Set"name"() (e.g., SetKind());
+// vtkSetMacro can't be used because 'enum class' won't trivially convert to integer for logging.
+//
+#define vtkSetEnumMacro(name, enumType)                                                            \
+  virtual void Set##name(enumType _arg)                                                            \
+  {                                                                                                \
+    vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting " #name " to "            \
+                  << static_cast<std::underlying_type<enumType>::type>(_arg));                     \
+    if (this->name != _arg)                                                                        \
+    {                                                                                              \
+      this->name = _arg;                                                                           \
+      this->Modified();                                                                            \
+    }                                                                                              \
+  }
+
+//
+// Get 'enum class' type.  Creates member Get"name"() (e.g., GetKind());
+// vtkSetMacro can't be used because 'enum class' won't trivially convert to integer for logging.
+//
+#define vtkGetEnumMacro(name, enumType)                                                            \
+  virtual enumType Get##name() const                                                               \
+  {                                                                                                \
+    vtkDebugMacro(<< this->GetClassName() << " (" << this << "): returning " << #name " of "       \
+                  << static_cast<std::underlying_type<enumType>::type>(this->name));               \
+    return this->name;                                                                             \
+  }
+
+//
 // Set character string.  Creates member Set"name"()
 // (e.g., SetFilename(char *));
 //

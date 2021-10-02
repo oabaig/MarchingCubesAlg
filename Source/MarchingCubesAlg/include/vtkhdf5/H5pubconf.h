@@ -26,9 +26,6 @@
 /* Define if using a Windows compiler (i.e. Visual Studio) */
 #define H5_HAVE_VISUAL_STUDIO 1
 
-/* Define if building universal (internal helper macro) */
-/* #undef H5_AC_APPLE_UNIVERSAL_BUILD */
-
 /* Define if C++ compiler recognizes offsetof */
 /* #undef H5_CXX_HAVE_OFFSETOF */
 
@@ -530,6 +527,7 @@
 #define H5_SIZEOF_INT_LEAST8_T 1
 
 #if !defined(__APPLE__)
+
 /* The size of `size_t', as computed by sizeof. */
 #define H5_SIZEOF_SIZE_T 8
 
@@ -539,8 +537,17 @@
 /* The size of `long', as computed by sizeof. */
 #define H5_SIZEOF_LONG 4
 
+/* The size of `long double', as computed by sizeof. */
+#define H5_SIZEOF_LONG_DOUBLE 8
+
 #else
-   # if defined(__LP64__) && __LP64__
+
+  /* On Apple, to support Universal Binaries (where multiple CPU
+     architectures exist in one library/executable), we can't assume
+     the machine doing the compiling has the same endianness or type
+     sizes as all the various architectures (PowerPC, Intel, ARM). */
+
+  # if defined(__LP64__) && __LP64__
   #define H5_SIZEOF_LONG 8
   #define H5_SIZEOF_SIZE_T 8
   #define H5_SIZEOF_SSIZE_T 8
@@ -550,10 +557,15 @@
   #define H5_SIZEOF_SSIZE_T 4
   # endif
 
-#endif
+  # if defined(__i386__) || defined(__x86_64__)
+  #define H5_SIZEOF_LONG_DOUBLE 16
+  # elif defined(__aarch64__)
+  #define H5_SIZEOF_LONG_DOUBLE 8
+  # else
+  #define H5_SIZEOF_LONG_DOUBLE 8
+  # endif
 
-/* The size of `long double', as computed by sizeof. */
-#define H5_SIZEOF_LONG_DOUBLE 8
+#endif
 
 /* Define size of long long and/or __int64 bit integer type only if the type
    exists.  */
