@@ -15,6 +15,13 @@
 #include "vtkExtractVOI.h"
 #include "vtkImageActor.h"
 
+#include "vtkPNGWriter.h"
+#include "vtkPNGReader.h"
+#include "vtkImageData.h"
+#include "vtkImageFlip.h"
+
+#include <vector>
+
 #include "Runtime\Core\Public\Misc\Paths.h"
 
 #include <sstream>
@@ -31,5 +38,7 @@ class MARCHINGCUBESALG_API UVTKFileImporter_funclib : public UBlueprintFunctionL
 public:
 
 	UFUNCTION(BlueprintCallable, Category="SliceImages") static void SliceImages(FString fname);
+	UFUNCTION(BlueprintCallable, Category = "StichImages") static void StichImages();
+
 	
 };
