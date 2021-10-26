@@ -20,13 +20,13 @@ void UVTKFileImporter_funclib::SliceImages(FString fname) {
 	xyPlaneColors->SetLookupTable(bwLut);
 	xyPlaneColors->Update();
 
-	vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
+	vtkSmartPointer<vtkPNGWriter> imgWriter = vtkSmartPointer<vtkPNGWriter>::New();
 
 	vtkSmartPointer<vtkExtractVOI> volumeOfInterest = vtkSmartPointer<vtkExtractVOI>::New();
 	volumeOfInterest->SetInputConnection(xyPlaneColors->GetOutputPort());
 
 	for (int i = 0; i < 64; i++) {
-		volumeOfInterest->SetVOI(0, 127, 0, 31, i, i);
+		volumeOfInterest->SetVOI(0, 31, 0, 31, i, i);
 		volumeOfInterest->Update();
 
 		std::stringstream ss;
@@ -39,22 +39,83 @@ void UVTKFileImporter_funclib::SliceImages(FString fname) {
 		FString stringIntFName = stringInt.c_str();
 
 		
-		FString oSliceName = "MySlice" + stringIntFName + ".jpg";
+		FString oSliceName = "MySlice" + stringIntFName + ".png";
 		FString oDirectoryName = "VTKSlices/" + oSliceName;
 
 		const char* oFname = TCHAR_TO_UTF8(
 			*FPaths::Combine(FPaths::ProjectContentDir(), oDirectoryName)
 		);
 
-		jpegWriter->SetInputConnection(volumeOfInterest->GetOutputPort());
-		jpegWriter->SetFileName(oFname);
-		jpegWriter->Write();
+		imgWriter->SetInputConnection(volumeOfInterest->GetOutputPort());
+		imgWriter->SetFileName(oFname);
+		imgWriter->Write();
 
 	}
 
 	vtkSmartPointer<vtkImageAppend> horizontalImages = vtkSmartPointer<vtkImageAppend>::New();
+	horizontalImages->SetAppendAxis(1);
 
 	vtkSmartPointer<vtkImageAppend> verticalImages = vtkSmartPointer<vtkImageAppend>::New();
-	verticalImages->SetAppendAxis(1);
-	vtkSmartPointer<vtkJPEGReader> jpegReader = vtkSmartPointer<vtkJPEGReader>::New();
+	//verticalImages->SetAppendAxis(1);
+	vtkSmartPointer<vtkPNGReader> imgReader = vtkSmartPointer<vtkPNGReader>::New();
+
+	for (int i = 0; i < 64; i++) {
+		if (i % 8 == 0 && i > 0) {
+			verticalImages->Update();
+			vtkSmartPointer<vtkImageData> verticalImgData = vtkSmartPointer<vtkImageData>::New();
+
+			verticalImgData->ShallowCopy(verticalImages->GetOutput());
+			horizontalImages->AddInputData(verticalImgData);
+
+			verticalImages->RemoveAllInputs();
+		}
+
+		std::stringstream ss;
+
+		ss << i;
+
+		std::string stringInt;
+		ss >> stringInt;
+
+		FString stringIntFName = stringInt.c_str();
+
+
+		FString oSliceName = "MySlice" + stringIntFName + ".png";
+		FString oDirectoryName = "VTKSlices/" + oSliceName;
+
+		const char* oFname = TCHAR_TO_UTF8(
+			*FPaths::Combine(FPaths::ProjectContentDir(), oDirectoryName)
+		);
+
+		imgReader->SetFileName(oFname);
+		imgReader->Update();
+
+		vtkSmartPointer<vtkImageData> imgData = vtkSmartPointer<vtkImageData>::New();
+		imgData->ShallowCopy(imgReader->GetOutput());
+
+		verticalImages->AddInputData(imgData);
+	}
+
+	verticalImages->Update();
+	vtkSmartPointer<vtkImageData> verticalImgData = vtkSmartPointer<vtkImageData>::New();
+
+	verticalImgData->ShallowCopy(verticalImages->GetOutput());
+	horizontalImages->AddInputData(verticalImgData);
+	horizontalImages->Update();
+
+	vtkSmartPointer<vtkImageFlip> flipFilter = vtkSmartPointer<vtkImageFlip>::New();
+	flipFilter->SetFilteredAxes(1);
+	flipFilter->SetInputConnection(horizontalImages->GetOutputPort());
+	flipFilter->Update();
+
+	FString oSliceName = "appendedImages.png";
+	FString oDirectoryName = "VTKSlices/" + oSliceName;
+
+	const char* oFname = TCHAR_TO_UTF8(
+		*FPaths::Combine(FPaths::ProjectContentDir(), oDirectoryName)
+	);
+
+	imgWriter->SetInputData(flipFilter->GetOutput());
+	imgWriter->SetFileName(oFname);
+	imgWriter->Write();
 }
