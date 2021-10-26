@@ -21,9 +21,6 @@
 #include "vtkJPEGReader.h"
 #include "vtkImageData.h"
 
-#include "vtkPNGWriter.h"
-#include "vtkPNGReader.h"
-
 #include <sstream>
 #include <iostream>
 
@@ -31,7 +28,7 @@
 	if you get an error that says '(method) is not a member of vtkSmartPointer<(class)>', make sure you replace . to ->
 */
 
-int main() {
+int main(){
 	vtkSmartPointer<vtkDataSetReader> reader = vtkSmartPointer<vtkDataSetReader>::New();
 	reader->SetFileName("C:/Dev/UnrealProjects/MarchingCubesAlg/Assign3/src/bernard3D_Q.vtk");
 	reader->Update();
@@ -53,8 +50,8 @@ int main() {
 
 	vtkSmartPointer<vtkPiecewiseFunction> volumeGradientOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	volumeGradientOpacity->AddPoint(0, 0.0);
-	volumeGradientOpacity->AddPoint(90, 0.5);
-	volumeGradientOpacity->AddPoint(100, 1.0);
+	volumeGradientOpacity->AddPoint(90, 0.5);	
+	volumeGradientOpacity->AddPoint(100, 1.0);	
 
 	vtkSmartPointer<vtkVolumeProperty> volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
 	volumeProperty->SetColor(volumeColor);
@@ -90,18 +87,18 @@ int main() {
 	bwLut->SetValueRange(0, 1);
 	bwLut->Build();
 
-	vtkSmartPointer<vtkImageMapToColors> xyPlaneColors = vtkSmartPointer<vtkImageMapToColors>::New();
-	xyPlaneColors->SetInputConnection(reader->GetOutputPort());
-	xyPlaneColors->SetLookupTable(bwLut);
-	xyPlaneColors->Update();
-
-	int* dim = reader->GetStructuredPointsOutput()->GetDimensions();
+	vtkSmartPointer<vtkImageMapToColors> xy_plane_Colors = vtkSmartPointer<vtkImageMapToColors>::New();
+	xy_plane_Colors->SetInputConnection(reader->GetOutputPort());
+	xy_plane_Colors->SetLookupTable(bwLut);
+	xy_plane_Colors->Update();
 	
-	//std::cout << dim[0] << " " << dim[1] << std::endl;
+	int* dim = reader->GetStructuredPointsOutput()->GetDimensions();
 
+	//std::cout << dim[0] << " " << dim[1] << std::endl;
+	
 	vtkSmartPointer<vtkImageActor> xy_plane = vtkSmartPointer<vtkImageActor>::New();
-	xy_plane->GetMapper()->SetInputConnection(xyPlaneColors->GetOutputPort());
-	vtkSmartPointer<vtkPNGWriter> jpegWriter = vtkSmartPointer<vtkPNGWriter>::New();
+	xy_plane->GetMapper()->SetInputConnection(xy_plane_Colors->GetOutputPort());
+	vtkSmartPointer<vtkJPEGWriter> jpegWriter = vtkSmartPointer<vtkJPEGWriter>::New();
 
 	vtkSmartPointer<vtkExtractVOI> voi = vtkSmartPointer<vtkExtractVOI>::New();
 	voi->SetInputData(xy_plane->GetInput());
@@ -109,37 +106,50 @@ int main() {
 	for (current_zID; current_zID < 64; current_zID++) {
 		xy_plane->SetDisplayExtent(0, 128, 0, 128, current_zID, current_zID);
 		xy_plane->Update();
-
+		
 		std::stringstream ss;
 
 		ss << current_zID;
 
 		std::string prefixName = "test";
-		std::string suffixName = ".png";
+		std::string suffixName = ".jpg";
 		std::string stringInt;
 
 		ss >> stringInt;
 
-		voi->SetVOI(0, 31, 0, 31, current_zID, current_zID);
+		voi->SetVOI(0, 127, 0, 31, current_zID, current_zID);
 		voi->Update();
 
-		std::string fname = prefixName + stringInt + suffixName;;
+		std::string fname = prefixName + stringInt + suffixName;
+
+		//images->AddInputData(voi->GetOutput());
+
+		//vtkSmartPointer<vtkImageData> outputImage = vtkSmartPointer<vtkImageData>::New();
+
+		//outputImage->ShallowCopy(voi->GetOutput());
+		//images->AddInputData(outputImage);
+		//images->Update();
 
 		jpegWriter->SetInputData(voi->GetOutput());
 		jpegWriter->SetFileName(fname.c_str());
 		jpegWriter->Write();
 	}
+	/*
+	jpegWriter->SetFileName("appendedImages.jpg");
+	jpegWriter->SetInputData(images->GetOutput());
+	jpegWriter->Write();*/
 	
+
 	vtkSmartPointer<vtkImageAppend> horizontalImages = vtkSmartPointer<vtkImageAppend>::New();
 
 	vtkSmartPointer<vtkImageAppend> verticalImages = vtkSmartPointer<vtkImageAppend>::New();
 	verticalImages->SetAppendAxis(1);
-	vtkSmartPointer<vtkPNGReader> jpegReader = vtkSmartPointer<vtkPNGReader>::New();
+	vtkSmartPointer<vtkJPEGReader> jpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
 	for (int i = 0; i < 64; i++) {
 		if (i % 8 == 0 && i > 0) {
-			verticalImages->Update();
 			horizontalImages->AddInputData(verticalImages->GetOutput());
+			horizontalImages->Update();
 
 			verticalImages->RemoveAllInputs();
 			verticalImages->SetAppendAxis(1);
@@ -149,7 +159,7 @@ int main() {
 		ss << i;
 
 		std::string prefixName = "test";
-		std::string suffixName = ".png";
+		std::string suffixName = ".jpg";
 		std::string stringInt;
 
 		ss >> stringInt;
@@ -162,7 +172,8 @@ int main() {
 		jpegReader->Update();
 		imageData->ShallowCopy(jpegReader->GetOutput());
 		verticalImages->AddInputData(imageData);
-
+		verticalImages->Update();
+		
 	}
 
 	horizontalImages->AddInputData(verticalImages->GetOutput());
@@ -171,11 +182,9 @@ int main() {
 	std::cout << verticalImages->GetNumberOfInputs() << std::endl;
 
 	jpegWriter->SetInputData(horizontalImages->GetOutput());
-	jpegWriter->SetFileName("appendedImages.png");
+	jpegWriter->SetFileName("appendedImages.jpg");
 	jpegWriter->Write();
 	
-
-
 	renderer->AddActor(xy_plane);
 	// end xy plane cutter
 
@@ -185,6 +194,6 @@ int main() {
 	renderWindow->Render();
 	renderWindowInteractor->Start();
 
-
+	
 	return 0;
 }
