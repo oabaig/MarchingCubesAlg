@@ -19,6 +19,8 @@
 #include "vtkPNGReader.h"
 #include "vtkImageData.h"
 #include "vtkImageFlip.h"
+#include "vtkStructuredPoints.h"
+
 
 #include "Runtime\Core\Public\Misc\Paths.h"
 

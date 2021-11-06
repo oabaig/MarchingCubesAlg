@@ -21,6 +21,10 @@
 		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true
+		},
+		{
+			"Name": "TBRaymarcherPlugin",
+			"Enabled": false
 		}
 	]
 }

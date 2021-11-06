@@ -32,38 +32,6 @@
 			"Type": "DynamicLibrary"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-Raymarcher.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-Raymarcher.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-FractalMarcher.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-FractalMarcher.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-VolumeTextureToolkit.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-VolumeTextureToolkit.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-VolumeTextureToolkitEditor.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor-VolumeTextureToolkitEditor.pdb",
-			"Type": "SymbolFile"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/2D/Paper2D/Binaries/Win64/UE4Editor-Paper2D.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -2280,10 +2248,6 @@
 			"Type": "RequiredResource"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/Binaries/Win64/UE4Editor.modules",
-			"Type": "RequiredResource"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/2D/Paper2D/Binaries/Win64/UE4Editor.modules",
 			"Type": "RequiredResource"
 		},
@@ -2719,10 +2683,6 @@
 		},
 		{
 			"Path": "$(EngineDir)/Plugins/Editor/EditorScriptingUtilities/EditorScriptingUtilities.uplugin",
-			"Type": "UFS"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/TBRaymarcherPlugin/TBRaymarcherPlugin.uplugin",
 			"Type": "UFS"
 		},
 		{

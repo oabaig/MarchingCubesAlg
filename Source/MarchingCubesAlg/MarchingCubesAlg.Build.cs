@@ -9,8 +9,7 @@ public class MarchingCubesAlg : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UnrealEd", "ClassViewer",
-        "Raymarcher"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UnrealEd", "ClassViewer"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

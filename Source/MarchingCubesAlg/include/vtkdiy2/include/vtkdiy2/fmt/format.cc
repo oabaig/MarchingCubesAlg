@@ -5,7 +5,10 @@
 //
 // For the license information refer to format.h.
 
-#include "fmt/format-inl.h"
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
+#include "../fmt/format-inl.h"
 
 FMT_BEGIN_NAMESPACE
 template struct FMT_API internal::basic_data<void>;

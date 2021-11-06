@@ -20,13 +20,15 @@ void UVTKFileImporter_funclib::SliceImages(FString fname) {
 	xyPlaneColors->SetLookupTable(bwLut);
 	xyPlaneColors->Update();
 
+	int* dim = reader->GetStructuredPointsOutput()->GetDimensions();
+
 	vtkSmartPointer<vtkPNGWriter> imgWriter = vtkSmartPointer<vtkPNGWriter>::New();
 
 	vtkSmartPointer<vtkExtractVOI> volumeOfInterest = vtkSmartPointer<vtkExtractVOI>::New();
 	volumeOfInterest->SetInputConnection(xyPlaneColors->GetOutputPort());
 
-	for (int i = 0; i < 64; i++) {
-		volumeOfInterest->SetVOI(0, 31, 0, 31, i, i);
+	for (int i = 0; i < dim[2]; i++) {
+		volumeOfInterest->SetVOI(0, dim[0] - 1, 0, dim[1] - 1, i, i);
 		volumeOfInterest->Update();
 
 		std::stringstream ss;
@@ -52,15 +54,16 @@ void UVTKFileImporter_funclib::SliceImages(FString fname) {
 
 	}
 
+	int numXYFrames = sqrt(dim[2]);
+
 	vtkSmartPointer<vtkImageAppend> horizontalImages = vtkSmartPointer<vtkImageAppend>::New();
 	horizontalImages->SetAppendAxis(1);
 
 	vtkSmartPointer<vtkImageAppend> verticalImages = vtkSmartPointer<vtkImageAppend>::New();
-	//verticalImages->SetAppendAxis(1);
 	vtkSmartPointer<vtkPNGReader> imgReader = vtkSmartPointer<vtkPNGReader>::New();
 
-	for (int i = 0; i < 64; i++) {
-		if (i % 8 == 0 && i > 0) {
+	for (int i = 0; i < dim[2]; i++) {
+		if (i % numXYFrames == 0 && i > 0) {
 			verticalImages->Update();
 			vtkSmartPointer<vtkImageData> verticalImgData = vtkSmartPointer<vtkImageData>::New();
 

@@ -10,7 +10,9 @@
 #  define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "fmt/posix.h"
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+#include "../fmt/posix.h"
 
 #include <limits.h>
 #include <sys/stat.h>
